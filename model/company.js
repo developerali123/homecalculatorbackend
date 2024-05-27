@@ -7,6 +7,8 @@ const companySchema = new mongoose.Schema(
     numberOfTrucks: { type: String, required: true },
     city: { type: String, required: true },
     companyId: { type: Number, required: true,unique: true},
+    rating: { type: Number, default: 5 },
+    phoneNumber: { type: String, required: true } 
   },
   {
     timestamps: true,
