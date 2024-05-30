@@ -1,5 +1,14 @@
 import express from "express";
-import { login, register, updatePassword, userreview, verify, verifycode, verifyemail } from "../controllers/usercontroller.js";
+import {
+  login,
+  register,
+  updatePassword,
+  userbyid,
+  userreview,
+  verify,
+  verifycode,
+  verifyemail,
+} from "../controllers/usercontroller.js";
 
 const router = express.Router();
 
@@ -15,7 +24,8 @@ router.post("/verifycode", verifycode);
 
 router.put("/updatepassword", updatePassword);
 
-router.post('/reviews', userreview);
-  
+router.post("/reviews", userreview);
+
+router.get("/users/:userId",userbyid );
 
 export default router;

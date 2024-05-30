@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import bcrypt from "bcryptjs";
 import UserReview from "../model/userreview.js";
+import Company from "../model/company.js";
 
 export const register = async (req, res) => {
   try {
@@ -304,5 +305,25 @@ export const userreview=async (req, res) => {
     res.status(201).json(newReview);
   } catch (error) {
     res.status(400).json({ message: error.message });
+  }
+}
+
+export const userbyid=async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findOne({ userId: userId });
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    const companies = await Company.find({ userId: user.userId });
+
+    res.status(200).json({
+      user,
+      companies,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 }
