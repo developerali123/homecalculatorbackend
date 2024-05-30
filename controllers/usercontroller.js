@@ -3,6 +3,7 @@ import User from "../model/user.js";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import bcrypt from "bcryptjs";
+import UserReview from "../model/userreview.js";
 
 export const register = async (req, res) => {
   try {
@@ -285,3 +286,23 @@ export const updatePassword = async (req, res) => {
     return res.status(500).send("Internal Server Error");
   }
 };
+
+export const userreview=async (req, res) => {
+  const { userId, tender_cancel, auction_experience, tender_service, ratings, comments } = req.body;
+  
+  try {
+    const newReview = new UserReview({
+      userId,
+      tender_cancel,
+      auction_experience,
+      tender_service,
+      ratings,
+      comments
+    });
+    
+    await newReview.save();
+    res.status(201).json(newReview);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
