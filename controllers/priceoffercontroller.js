@@ -30,6 +30,7 @@ export const sendoffer = async (req, res) => {
       arrivaldate,
       starthours,
       endhours,
+      priceconfirm: true,
     });
 
     // Save the PriceOffer to the database
@@ -41,7 +42,7 @@ export const sendoffer = async (req, res) => {
   }
 };
 
-export const getPriceOffer=async (req, res) => {
+export const getPriceOffer = async (req, res) => {
   try {
     const tenderId = req.params.tenderId;
 
@@ -54,24 +55,29 @@ export const getPriceOffer=async (req, res) => {
     // Find the related PriceOffers for the specified tenderId
     const priceOffers = await PriceOffer.find({ tenderId });
 
-    // Construct the response data
-    const responseData = priceOffers.map(offer => ({
-      moverId: offer.companyId,
-      tenderStatus: tender.tenderStatus, // Get tenderStatus from the Tender model
-      priceOffer: offer.priceOffer,
-      orderconfirm:offer.orderconfirm,
-      transportDate: offer.transportdate,
-      arrivalDate: offer.arrivaldate,
-      startHours: offer.starthours,
-      endHours: offer.endhours,
+    // Asynchronously retrieve company data for each price offer
+    const priceOffersWithCompanyData = await Promise.all(priceOffers.map(async (offer) => {
+      const companyDetails = await Company.findOne({ companyId: offer.companyId });
+      return {
+        moverId: offer.companyId,
+        tenderStatus: tender.tenderStatus,
+        priceOffer: offer.priceOffer,
+        orderconfirm: offer.orderconfirm,
+        transportDate: offer.transportdate,
+        arrivalDate: offer.arrivaldate,
+        startHours: offer.starthours,
+        endHours: offer.endhours,
+        companyDetails: companyDetails // Embed the entire company document
+      };
     }));
 
-    res.json(responseData);
+    res.json(priceOffersWithCompanyData);
   } catch (err) {
     console.error('Error fetching data', err);
     res.status(500).json({ message: 'Server error' });
   }
 }
+
 
 export const updatePriceOffer = async (req, res) => {
   const {

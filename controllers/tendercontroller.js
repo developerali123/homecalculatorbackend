@@ -3,6 +3,7 @@ import Tender from "../model/tender.js";
 import TenderDetails from "../model/tenderdetails.js";
 import Company from "../model/company.js";
 import PriceOffer from "../model/priceoffer.js";
+import { confirmpriceoffer } from "./priceoffercontroller.js";
 
 export const sendtenders = async (req, res) => {
   const {
@@ -86,7 +87,11 @@ export const getactivetenders = async (req, res) => {
     const companyId = company.companyId;
 
     // Fetch price offers associated with the company
-    const companyPriceOffers = await PriceOffer.find({ companyId: companyId });
+    const companyPriceOffers = await PriceOffer.find({ 
+      companyId: companyId,
+    });
+
+    console.log(companyPriceOffers[0]?.priceconfirm);
 
     // Find the lowest price offer for each tenderId associated with the company
     const lowestPriceOffers = companyPriceOffers.reduce((acc, offer) => {
@@ -108,7 +113,8 @@ export const getactivetenders = async (req, res) => {
     const tenderDetails = await TenderDetails.find();
 
     // Fetch all price offers to find the overall lowest offer for each tenderId
-    const allPriceOffers = await PriceOffer.find();
+    const allPriceOffers = await PriceOffer.find({
+    });
 
     const bestOffers = allPriceOffers.reduce((acc, offer) => {
       if (
@@ -131,10 +137,11 @@ export const getactivetenders = async (req, res) => {
         ...tender._doc,
         details: details,
         priceOffer: priceOffer ? priceOffer.priceOffer : null, // Include the lowest price offer for the company if available
+        priceconfirm:companyPriceOffers[0]?.priceconfirm,
         bestOffer: bestOffer ? bestOffer.priceOffer : null, // Include the overall lowest price offer if available
       };
     });
-
+    // console.log(result);
     res.json(result);
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
@@ -143,9 +150,7 @@ export const getactivetenders = async (req, res) => {
 
 export const getpendingtenders = async (req, res) => {
   try {
-    const userId = req.params.userId; // Get userId from params
-
-    // Fetch the company associated with the user
+    const userId = req.params.userId;
     const company = await Company.findOne({ userId: userId });
     if (!company) {
       return res.status(404).json({ error: "Company not found" });
@@ -154,7 +159,11 @@ export const getpendingtenders = async (req, res) => {
     const companyId = company.companyId;
 
     // Fetch price offers associated with the company
-    const companyPriceOffers = await PriceOffer.find({ companyId: companyId });
+    const companyPriceOffers = await PriceOffer.find({ 
+      companyId: companyId,
+    });
+
+    console.log(companyPriceOffers[0]?.priceconfirm);
 
     // Find the lowest price offer for each tenderId associated with the company
     const lowestPriceOffers = companyPriceOffers.reduce((acc, offer) => {
@@ -172,12 +181,12 @@ export const getpendingtenders = async (req, res) => {
     // Find pending tenders associated with the tenderIds
     const tenders = await Tender.find({
       tenderStatus: "Active",
-      tenderId: { $in: tenderIds },
     });
     const tenderDetails = await TenderDetails.find();
 
     // Fetch all price offers to find the overall lowest offer for each tenderId
-    const allPriceOffers = await PriceOffer.find();
+    const allPriceOffers = await PriceOffer.find({
+    });
 
     const bestOffers = allPriceOffers.reduce((acc, offer) => {
       if (
@@ -200,12 +209,51 @@ export const getpendingtenders = async (req, res) => {
         ...tender._doc,
         details: details,
         priceOffer: priceOffer ? priceOffer.priceOffer : null, // Include the lowest price offer for the company if available
+        priceconfirm:companyPriceOffers[0]?.priceconfirm,
         bestOffer: bestOffer ? bestOffer.priceOffer : null, // Include the overall lowest price offer if available
       };
     });
-
+    // console.log(result);
     res.json(result);
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const canceltender=async (req, res) => {
+  const { tenderId } = req.params;
+  try {
+    const updatedTender = await Tender.findOneAndUpdate(
+      { tenderId },
+      { tenderStatus: "Cancel" },
+      { new: true }
+    );
+    if (!updatedTender) {
+      return res.status(404).json({ message: "Tender not found" });
+    }
+    res.json(updatedTender);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error updating tender status", error: err });
+  }
+}
+
+export const finishtender=async (req, res) => {
+  const { tenderId } = req.params;
+  try {
+    const updatedTender = await Tender.findOneAndUpdate(
+      { tenderId },
+      { tenderStatus: "Finished" },
+      { new: true }
+    );
+    if (!updatedTender) {
+      return res.status(404).json({ message: "Tender not found" });
+    }
+    res.json(updatedTender);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error updating tender status", error: err });
+  }
+}
