@@ -163,8 +163,6 @@ export const getpendingtenders = async (req, res) => {
       companyId: companyId,
     });
 
-    
-
     // Find the lowest price offer for each tenderId associated with the company
     const lowestPriceOffers = companyPriceOffers.reduce((acc, offer) => {
       if (
@@ -178,15 +176,15 @@ export const getpendingtenders = async (req, res) => {
 
     const tenderIds = Object.keys(lowestPriceOffers);
 
-    // Find pending tenders associated with the tenderIds
+    // Find pending and active tenders associated with the tenderIds
     const tenders = await Tender.find({
-      tenderStatus: "Active",
+      tenderStatus: { $in: ["Active", "Pending"] },
     });
+
     const tenderDetails = await TenderDetails.find();
 
     // Fetch all price offers to find the overall lowest offer for each tenderId
-    const allPriceOffers = await PriceOffer.find({
-    });
+    const allPriceOffers = await PriceOffer.find();
 
     const bestOffers = allPriceOffers.reduce((acc, offer) => {
       if (
@@ -209,16 +207,17 @@ export const getpendingtenders = async (req, res) => {
         ...tender._doc,
         details: details,
         priceOffer: priceOffer ? priceOffer.priceOffer : null, // Include the lowest price offer for the company if available
-        priceconfirm:companyPriceOffers[0]?.priceconfirm,
+        priceconfirm: companyPriceOffers[0]?.priceconfirm,
         bestOffer: bestOffer ? bestOffer.priceOffer : null, // Include the overall lowest price offer if available
       };
     });
-    // 
+
     res.json(result);
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 export const canceltender=async (req, res) => {
   const { tenderId } = req.params;
