@@ -69,14 +69,14 @@ export const register = async (req, res) => {
 
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
-        console.log(error);
+        
         return res.status(500).send("Failed to send verification email");
       }
-      console.log(`Email sent: ${info.response}`);
+      
       return res.status(201).json(user);
     });
   } catch (err) {
-    console.log(err);
+    
     return res.status(500).send("Internal Server Error");
   }
 };
@@ -111,7 +111,7 @@ export const verify = async (req, res) => {
 
     return res.status(200).send("Verification successful");
   } catch (err) {
-    console.log(err);
+    
     return res.status(500).send("Internal Server Error");
   }
 };
@@ -147,7 +147,7 @@ export const login = async (req, res) => {
       return res.status(400).send("Invalid Credentials");
     }
   } catch (err) {
-    console.log(err);
+    
   }
 };
 
@@ -204,10 +204,10 @@ export const verifyemail = async (req, res) => {
 
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-          console.log(error);
+          
           return res.status(500).send("Failed to send verification email");
         }
-        console.log(`Email sent: ${info.response}`);
+        
         return res.status(201).json(user);
       });
       return res.status(200);
@@ -215,7 +215,7 @@ export const verifyemail = async (req, res) => {
       return res.status(400).send("No user found");
     }
   } catch (err) {
-    console.log(err);
+    
   }
 };
 
@@ -249,7 +249,7 @@ export const verifycode = async (req, res) => {
 
     return res.status(200).send("Verification successful");
   } catch (err) {
-    console.log(err);
+    
     return res.status(500).send("Internal Server Error");
   }
 };
@@ -283,7 +283,7 @@ export const updatePassword = async (req, res) => {
 
     return res.status(200).send("Password updated successfully");
   } catch (err) {
-    console.log(err);
+    
     return res.status(500).send("Internal Server Error");
   }
 };

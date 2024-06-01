@@ -91,7 +91,7 @@ export const getactivetenders = async (req, res) => {
       companyId: companyId,
     });
 
-    console.log(companyPriceOffers[0]?.priceconfirm);
+    
 
     // Find the lowest price offer for each tenderId associated with the company
     const lowestPriceOffers = companyPriceOffers.reduce((acc, offer) => {
@@ -137,11 +137,11 @@ export const getactivetenders = async (req, res) => {
         ...tender._doc,
         details: details,
         priceOffer: priceOffer ? priceOffer.priceOffer : null, // Include the lowest price offer for the company if available
-        priceconfirm:companyPriceOffers[0]?.priceconfirm,
+        priceconfirm:companyPriceOffers[0]?.priceconfirm?companyPriceOffers[0]?.priceconfirm:false,
         bestOffer: bestOffer ? bestOffer.priceOffer : null, // Include the overall lowest price offer if available
       };
     });
-    // console.log(result);
+    // 
     res.json(result);
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
@@ -163,7 +163,7 @@ export const getpendingtenders = async (req, res) => {
       companyId: companyId,
     });
 
-    console.log(companyPriceOffers[0]?.priceconfirm);
+    
 
     // Find the lowest price offer for each tenderId associated with the company
     const lowestPriceOffers = companyPriceOffers.reduce((acc, offer) => {
@@ -213,7 +213,7 @@ export const getpendingtenders = async (req, res) => {
         bestOffer: bestOffer ? bestOffer.priceOffer : null, // Include the overall lowest price offer if available
       };
     });
-    // console.log(result);
+    // 
     res.json(result);
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
