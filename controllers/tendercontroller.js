@@ -178,7 +178,77 @@ export const getpendingtenders = async (req, res) => {
 
     // Find pending and active tenders associated with the tenderIds
     const tenders = await Tender.find({
-      tenderStatus: { $in: ["Active", "Pending"] },
+      tenderStatus: { $in: ["Active", "Cancel"] },
+    });
+
+    const tenderDetails = await TenderDetails.find();
+
+    // Fetch all price offers to find the overall lowest offer for each tenderId
+    const allPriceOffers = await PriceOffer.find();
+
+    const bestOffers = allPriceOffers.reduce((acc, offer) => {
+      if (
+        !acc[offer.tenderId] ||
+        acc[offer.tenderId].priceOffer > offer.priceOffer
+      ) {
+        acc[offer.tenderId] = offer;
+      }
+      return acc;
+    }, {});
+
+    const result = tenders.map((tender) => {
+      const details = tenderDetails.filter(
+        (detail) => detail.tenderId === tender.tenderId
+      );
+      const priceOffer = lowestPriceOffers[tender.tenderId];
+      const bestOffer = bestOffers[tender.tenderId];
+
+      return {
+        ...tender._doc,
+        details: details,
+        priceOffer: priceOffer ? priceOffer.priceOffer : null, // Include the lowest price offer for the company if available
+        priceconfirm: companyPriceOffers[0]?.priceconfirm,
+        bestOffer: bestOffer ? bestOffer.priceOffer : null, // Include the overall lowest price offer if available
+      };
+    });
+
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getapprovedtenders = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const company = await Company.findOne({ userId: userId });
+    if (!company) {
+      return res.status(404).json({ error: "Company not found" });
+    }
+
+    const companyId = company.companyId;
+
+    // Fetch price offers associated with the company
+    const companyPriceOffers = await PriceOffer.find({ 
+      companyId: companyId,
+    });
+
+    // Find the lowest price offer for each tenderId associated with the company
+    const lowestPriceOffers = companyPriceOffers.reduce((acc, offer) => {
+      if (
+        !acc[offer.tenderId] ||
+        acc[offer.tenderId].priceOffer > offer.priceOffer
+      ) {
+        acc[offer.tenderId] = offer;
+      }
+      return acc;
+    }, {});
+
+    const tenderIds = Object.keys(lowestPriceOffers);
+
+    // Find pending and active tenders associated with the tenderIds
+    const tenders = await Tender.find({
+      tenderStatus: { $in: ["Confirmed", "Finished"] },
     });
 
     const tenderDetails = await TenderDetails.find();

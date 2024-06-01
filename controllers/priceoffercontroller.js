@@ -127,7 +127,7 @@ export const confirmpriceoffer=async (req, res) => {
     // Update Tender status to 'Pending'
     const updatedTender = await Tender.findOneAndUpdate(
       { tenderId },
-      { tenderStatus: "Pending" },
+      { tenderStatus: "Confirmed" },
       { new: true }
     );
 

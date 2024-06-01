@@ -3,6 +3,7 @@ import {
     canceltender,
   finishtender,
   getactivetenders,
+  getapprovedtenders,
   getpendingtenders,
   sendtenders,
   tenderdetails,
@@ -16,6 +17,7 @@ router.post("/tenderdetails", tenderdetails);
 
 router.get("/getactivetenders/:userId", getactivetenders);
 router.get("/getpendingtenders/:userId", getpendingtenders);
+router.get("/getapprovedtenders/:userId", getapprovedtenders);
 router.post("/cancelTender/:tenderId", canceltender);
 router.post("/finishTender/:tenderId", finishtender);
 
