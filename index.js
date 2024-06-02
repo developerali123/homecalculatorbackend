@@ -9,7 +9,8 @@ import AuthRoutes from "./routes/AuthRoutes.js";
 import CompanyRoutes from "./routes/CompanyRoutes.js";
 import TenderRoutes from "./routes/TenderRoutes.js";
 import PriceOfferRoutes from "./routes/PriceOfferRoutes.js";
-
+import swaggerJSDoc from "swagger-jsdoc";
+import swaggerui from "swagger-ui-express";
 
 //configure env
 dotenv.config();
@@ -66,6 +67,31 @@ app.use((err, req, res, next) => {
 
 //port
 const PORT = process.env.PORT || 8080;
+
+//swagger config
+const options={
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Tender Creation",
+      version: "1.0.0",
+      description: "Tender Backend",
+      contact:{
+        name: "Muhammad Ali Mirza",
+        url: "http://localhost:4000/api-docs",
+        email: "muhan.mirza@gmail.com",
+      }
+    },
+    servers: [
+      {
+        url: "http://localhost:4000",
+      },
+    ],
+  },
+  apis: ["./routes/*.js"],
+}
+const spacs=swaggerJSDoc(options);
+app.use("/api-docs",swaggerui.serve,swaggerui.setup(spacs)); 
 
 //run listen
 app.listen(PORT, () => {
