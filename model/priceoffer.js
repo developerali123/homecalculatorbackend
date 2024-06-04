@@ -1,4 +1,8 @@
 import mongoose from "mongoose";
+import AutoIncrementFactory from "mongoose-sequence";
+
+// Initialize the AutoIncrement plugin
+const AutoIncrement = AutoIncrementFactory(mongoose);
 
 const priceOfferSchema = new mongoose.Schema(
   {
@@ -16,6 +20,9 @@ const priceOfferSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Add the AutoIncrement plugin to the schema
+priceOfferSchema.plugin(AutoIncrement, { inc_field: 'PriceId' });
 
 const PriceOffer = mongoose.model("PriceOffer", priceOfferSchema);
 export default PriceOffer;

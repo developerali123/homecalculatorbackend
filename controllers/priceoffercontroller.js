@@ -59,7 +59,7 @@ export const getPriceOffer = async (req, res) => {
     const priceOffersWithCompanyData = await Promise.all(priceOffers.map(async (offer) => {
       const companyDetails = await Company.findOne({ companyId: offer.companyId });
       return {
-        moverId: offer.companyId,
+        moverId: offer.PriceId,
         tenderStatus: tender.tenderStatus,
         priceOffer: offer.priceOffer,
         orderconfirm: offer.orderconfirm,
