@@ -1,5 +1,6 @@
 import Company from "../model/company.js";
 import Review from "../model/companyreview.js";
+import User from "../model/user.js";
 import { updateCompanyRating } from "../utils/utils.js";
 
 export const companyregister = async (req, res) => {
@@ -47,5 +48,39 @@ export const addreview = async (req, res) => {
     res.status(201).send(newReview);
   } catch (error) {
     res.status(400).send(error);
+  }
+};
+
+export const updateprofile = async (req, res) => {
+  const { userId } = req.params;
+  const { userData, companyData } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+
+  try {
+    // Update User information if userData is provided
+    if (userData) {
+      await User.findByIdAndUpdate(userId, { $set: userData }, { new: true });
+    }
+
+    // Update Company information if companyData is provided
+    if (companyData) {
+      await Company.findOneAndUpdate(
+        { userId: userId },
+        { $set: companyData },
+        { new: true }
+      );
+    }
+
+    return res
+      .status(200)
+      .json({ message: "User and company profile updated successfully" });
+  } catch (error) {
+    console.error("Update profile error:", error);
+    return res
+      .status(500)
+      .json({ message: "Failed to update profile", error: error.message });
   }
 };
