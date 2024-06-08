@@ -58,6 +58,7 @@ export const getPriceOffer = async (req, res) => {
     // Asynchronously retrieve company data for each price offer
     const priceOffersWithCompanyData = await Promise.all(priceOffers.map(async (offer) => {
       const companyDetails = await Company.findOne({ companyId: offer.companyId });
+      const reviewCount = await Review.countDocuments({ companyId: offer.companyId }); // Count reviews for the company
       return {
         moverId: offer.PriceId,
         tenderStatus: tender.tenderStatus,
@@ -67,7 +68,8 @@ export const getPriceOffer = async (req, res) => {
         arrivalDate: offer.arrivaldate,
         startHours: offer.starthours,
         endHours: offer.endhours,
-        companyDetails: companyDetails // Embed the entire company document
+        companyDetails: companyDetails, // Embed the entire company document
+        reviewCount: reviewCount // Include the count of reviews
       };
     }));
 
