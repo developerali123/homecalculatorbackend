@@ -53,32 +53,37 @@ export const addreview = async (req, res) => {
 
 export const updateprofile = async (req, res) => {
   const { userId } = req.params;
-  const { userData, companyData } = req.body;
-
-  // Validate the userId is provided
-  if (!userId) {
-    return res.status(400).json({ message: "User ID is required" });
-  }
+  const { fullName, companyName, numberOfTrucks, phoneNumber, city, companyId } = req.body;
 
   try {
-    // Update User information if userData is provided
-    if (userData) {
-      await User.findOneAndUpdate({ userId: parseInt(userId) }, { $set: userData }, { new: true });
+    // Update the user
+    const updatedUser = await User.findOneAndUpdate(
+      { userId }, 
+      { name: fullName }, // Assuming fullName maps to 'name' in User schema
+      { new: true, session }
+    );
+
+    if (!updatedUser) {
+      throw new Error("User not found");
     }
 
-    // Update Company information if companyData is provided
-    if (companyData) {
-      await Company.findOneAndUpdate(
-        { userId: parseInt(userId) },
-        { $set: companyData },
-        { new: true }
-      );
+    // Update the associated company
+    const updatedCompany = await Company.findOneAndUpdate(
+      { userId: updatedUser.userId },
+      { companyName, numberOfTrucks, phoneNumber, city },
+      { new: true, session }
+    );
+
+    if (!updatedCompany) {
+      throw new Error("Company not found");
     }
 
-    // Sending a successful response back
-    return res.status(200).json({ message: "User and company profile updated successfully" });
+    // Send the updated data back to the client
+    res.status(200).json({
+      user: updatedUser,
+      company: updatedCompany,
+    });
   } catch (error) {
-    console.error("Update profile error:", error);
-    return res.status(500).json({ message: "Failed to update profile", error: error.message });
+    res.status(400).json({ message: error.message });
   }
 }
