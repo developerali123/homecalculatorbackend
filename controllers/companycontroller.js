@@ -60,7 +60,7 @@ export const updateprofile = async (req, res) => {
     const updatedUser = await User.findOneAndUpdate(
       { userId }, 
       { name: fullName }, // Assuming fullName maps to 'name' in User schema
-      { new: true, session }
+      { new: true, }
     );
 
     if (!updatedUser) {
@@ -70,8 +70,8 @@ export const updateprofile = async (req, res) => {
     // Update the associated company
     const updatedCompany = await Company.findOneAndUpdate(
       { userId: updatedUser.userId },
-      { companyName, numberOfTrucks, phoneNumber, city },
-      { new: true, session }
+      { companyName, numberOfTrucks, phoneNumber, city ,companyId},
+      { new: true, }
     );
 
     if (!updatedCompany) {
