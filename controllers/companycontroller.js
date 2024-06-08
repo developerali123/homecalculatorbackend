@@ -1,9 +1,17 @@
 import Company from "../model/company.js";
 import Review from "../model/companyreview.js";
+import { updateCompanyRating } from "../utils/utils.js";
 
 export const companyregister = async (req, res) => {
   try {
-    const { companyName, userId, numberOfTrucks, city, companyId,phoneNumber } = req.body;
+    const {
+      companyName,
+      userId,
+      numberOfTrucks,
+      city,
+      companyId,
+      phoneNumber,
+    } = req.body;
 
     // Check if the company already exists
     const existingCompany = await Company.findOne({ companyId });
@@ -18,7 +26,7 @@ export const companyregister = async (req, res) => {
       numberOfTrucks,
       city,
       companyId,
-      phoneNumber
+      phoneNumber,
     });
 
     // Save the company to the database
@@ -31,21 +39,7 @@ export const companyregister = async (req, res) => {
   }
 };
 
-async function updateCompanyRating(companyId) {
-  try {
-    const reviews = await Review.find({ companyId: companyId });
-    if (reviews.length > 0) {
-      const totalRating = reviews.reduce((acc, curr) => acc + curr.rating, 0);
-      const averageRating = totalRating / reviews.length;
-      await Company.updateOne({ companyId: companyId }, { rating: averageRating });
-    }
-  } catch (error) {
-    console.error('Failed to update company rating:', error);
-  }
-}
-
-
-export const addreview=async (req, res) => {
+export const addreview = async (req, res) => {
   try {
     const newReview = new Review(req.body);
     await newReview.save();
@@ -54,4 +48,4 @@ export const addreview=async (req, res) => {
   } catch (error) {
     res.status(400).send(error);
   }
-}
+};

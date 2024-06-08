@@ -8,6 +8,12 @@ const companySchema = new mongoose.Schema(
     city: { type: String, required: true },
     companyId: { type: Number, required: true,unique: true},
     rating: { type: Number, default: 5 },
+    Professionalism: { type: Number, default: 5 }, //rating 3
+    Punctuality: { type: Number, default: 5 }, //rating 4
+    Price: { type: Number, default: 5 }, //rating 5
+    Treatment: { type: Number, default: 5 }, //rating 6
+    Servicequality: { type: Number, default: 5 }, //rating 7
+    satisfaction: { type: Number, default: 5 }, //rating 1 & 2
     phoneNumber: { type: String, required: true } 
   },
   {
