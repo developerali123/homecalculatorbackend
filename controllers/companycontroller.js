@@ -62,7 +62,7 @@ export const updateprofile = async (req, res) => {
   try {
     // Update User information if userData is provided
     if (userData) {
-      await User.findByIdAndUpdate(userId, { $set: userData }, { new: true });
+      await User.findOneAndUpdate(userId, { $set: userData }, { new: true });
     }
 
     // Update Company information if companyData is provided
