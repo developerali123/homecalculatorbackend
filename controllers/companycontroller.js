@@ -55,6 +55,7 @@ export const updateprofile = async (req, res) => {
   const { userId } = req.params;
   const { userData, companyData } = req.body;
 
+  // Validate the userId is provided
   if (!userId) {
     return res.status(400).json({ message: "User ID is required" });
   }
@@ -62,25 +63,22 @@ export const updateprofile = async (req, res) => {
   try {
     // Update User information if userData is provided
     if (userData) {
-      await User.findOneAndUpdate(userId, { $set: userData }, { new: true });
+      await User.findOneAndUpdate({ userId: parseInt(userId) }, { $set: userData }, { new: true });
     }
 
     // Update Company information if companyData is provided
     if (companyData) {
       await Company.findOneAndUpdate(
-        { userId: userId },
+        { userId: parseInt(userId) },
         { $set: companyData },
         { new: true }
       );
     }
 
-    return res
-      .status(200)
-      .json({ message: "User and company profile updated successfully" });
+    // Sending a successful response back
+    return res.status(200).json({ message: "User and company profile updated successfully" });
   } catch (error) {
     console.error("Update profile error:", error);
-    return res
-      .status(500)
-      .json({ message: "Failed to update profile", error: error.message });
+    return res.status(500).json({ message: "Failed to update profile", error: error.message });
   }
-};
+}
