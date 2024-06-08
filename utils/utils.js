@@ -53,8 +53,8 @@ export const updateCompanyRating = async (companyId) => {
           Punctuality: averageRatings.rating4,
           Price: averageRatings.rating5,
           Treatment: averageRatings.rating6,
-          ServiceQuality: averageRatings.rating7,
-          Satisfaction: (averageRatings.rating1 + averageRatings.rating2) / 2
+          Servicequality: averageRatings.rating7,
+          satisfaction: (averageRatings.rating1 + averageRatings.rating2) / 2
         }
       );
     }
